@@ -44,24 +44,6 @@
         let ctx = this.realGC(c, o);
 
         if(c.includes('webgl')){
-            w.glID = [];
-
-            if(!ctx._texImage2D){
-                ctx._texImage2D = ctx.texImage2D;
-                ctx.texImage2D = (...a)=>{
-                    console.log('texImage2D', ...a);
-                    if(a[5] instanceof ImageData){
-                        if(firstTI2){
-                            firstTI2 = false;
-                            return;
-                        }
-
-                        w.glID.push(a[5]);
-                    }
-                    return ctx._texImage2D(...a)
-                };
-            }
-
             gl = ctx;
         }
 
@@ -485,7 +467,11 @@
             optionsUI: tweakerUI,
             scriptsUI: scriptsUI,
             addScriptByURL: addScriptByURL,
-            antiAfk: antiAfk
+            antiAfk: antiAfk,
+            getScript: function(name){
+                return twScripts[name];
+            },
+            runScript: runScript
         },
         gameLoadedListeners: []
     }
