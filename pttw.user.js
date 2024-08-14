@@ -1194,7 +1194,7 @@
         });
     }
 
-    function bbUI(){
+    function adlistUI(){
         function isSimilar(s1, s2){
             let lmatch = 0;
             const l1 = s1.length;
@@ -1647,7 +1647,7 @@
 
         pt.chat.registerCommand('options', tweakerUI);
         pt.chat.registerCommand('scripts', scriptsUI);
-        pt.chat.registerCommand('bb', bbUI);
+        pt.chat.registerCommand('adlist', adlistUI);
 
         pt.chat.registerCommand('setopt', args=>{
             twOptions[args[0]].value = args[1];
