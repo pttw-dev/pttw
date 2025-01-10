@@ -54,6 +54,36 @@
 - `isActionAvailable(name: string): boolean`  
   Узнать, доступно ли указанное действие.
 
+`_Action`  
+Представляет действие с панели действий.
+- `text: string`  
+  Название действия. Может быть не определено.
+- `index: number`  
+  Индекс действия. Может быть не определено.
+- `crc32: number`  
+  CRC32-сумма действия. Может быть не определено.
+
+`_KeyBindConfig`  
+Представляет конфигурацию привязки клавиш.
+- `alt: boolean`  
+  Состояние клавиши Alt.
+- `ctrl: boolean`  
+  Состояние клавиши Ctrl.
+- `key: string`  
+  Основная клавиша.
+
+`_KeyBindAction`  
+Представляет действие привязки клавиш.
+- `type: string`  
+  Тип действия. Одно из значений: `action`, `chat`, `js`.
+- `value: string | _Action`  
+  Значение, которое будет передано одной из следующих функций:
+  | `type` | Функция |
+  | ------ | ------- |
+  | `action` | `pt.action.invoke` |
+  | `chat` | `pt.chat.sendMessage` |
+  | `js` | `eval` |
+
 ## Функции
 
 ### Управление
@@ -61,8 +91,16 @@
 `async pt.move(direction: string, time: number): void`  
 Двигаться в указанном направлении (`left`, `right`, `up`, `down`) указанное количество миллисекунд.
 
-`pt.action(name: string | number): void`  
-Выполнить действие с панели действий по имени или индексу (начиная с 0).
+### Действия
+
+`pt.action.invoke(act: _Action): void`  
+Выполнить указанное действие.
+
+`pt.action.getAll(): Array<_Action>`  
+Получить список всех доступных действий.
+
+`async pt.action.select(): _Action`  
+Открыть интерфейс выбора действия. Возвращает объект с установленными свойствами `crc32` и `text` (может быть пустым).
 
 ### Статус
 
@@ -75,6 +113,9 @@
 Установить статус игрока.
 
 ### Чат
+
+`pt.chat.open(): void`  
+Открыть окно чата.
 
 `pt.chat.getMessage(offset: number): Message`  
 Получить объект Message сообщения с номером `offset`, начиная с последнего сообщения.
@@ -92,7 +133,7 @@
 Добавить в чат (не отправляя) сообщение с параметрами объекта Message. Возвращает переданный объект с установленным параметром `elem`.
 
 `pt.chat.editMessage(msg: Message): void`  
-Отредактировать сообщение (только у себя).
+Отредактировать сообщение (на клиенте).
 
 `pt.chat.registerCommand(cmd: string, callback: Function): void`  
 Добавить обработчик команды `cmd` - каждый раз, когда игрок отправляет эту команду в чат, будет вызываться функция `callback` с переданным ей списком аргументов команды. Параметр `cmd` должен быть без слеша в начале.
@@ -165,3 +206,14 @@
 
 `pt.tweaker.addScriptByURL(url: string, callback: Function): void`  
 Добавить скрипт по URL. После добавления скрипта будет выполнена функция `callback`.
+
+### Привязки клавиш
+
+`pt.keyBind.configFromString(src: string): _KeyBindConfig`  
+Создать объект `_KeyBindConfig` из строки, представляющей сочетание клавиш.
+
+`pt.keyBind.set(cfg: _KeyBindConfig, act: _KeyBindAction): void)`  
+Установить привязку сочетания клавиш.
+
+`pt.keyBind.delete(cfg: _KeyBindConfig): void`  
+Удалить привязку сочетания клавиш.
