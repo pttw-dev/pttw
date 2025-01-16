@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         pttw
 // @namespace    https://github.com/pttw-dev/pttw
-// @version      1.8
+// @version      1.8.1
 // @description  Добавляет новые функции в Pony Town
 // @author       nekit270
 // @match        http://*.pony.town/*
@@ -189,16 +189,24 @@
             },
             Player: Player,
             Message: Message,
-            move(dir, time){
-                //передвинуть персонажа в направлении dir time секунд, затем вызвать callback
-                w.dispatchEvent(new KeyboardEvent('keydown', {keyCode: this.keyCodes[dir]}));
-
+            sendKey(keyCode, delay){
                 return new Promise((res, rej)=>{
+                    let cfg = {};
+                    if(typeof keyCode == 'number'){
+                        cfg.keyCode = keyCode;
+                    }else{
+                        cfg.code = /^[a-z]{1}$/.test(keyCode)?'Key'+keyCode.toUpperCase():/^[0-9]{1}$/.test(keyCode)?'Digit'+keyCode.toUpperCase():keyCode;
+                    }
+
+                    w.dispatchEvent(new KeyboardEvent('keydown', cfg));
                     setTimeout(()=>{
-                        w.dispatchEvent(new KeyboardEvent('keyup', {keyCode: this.keyCodes[dir]}));
+                        w.dispatchEvent(new KeyboardEvent('keyup', cfg));
                         res();
-                    }, time??150);
+                    }, delay);
                 });
+            },
+            move(dir, time){
+                return this.sendKey(this.keyCodes[dir], time??150);
             },
             crc32: function(r){for(var a,o=[],c=0;c<256;c++){a=c;for(var f=0;f<8;f++)a=1&a?3988292384^a>>>1:a>>>1;o[c]=a}for(var n=-1,t=0;t<r.length;t++)n=n>>>8^o[255&(n^r.charCodeAt(t))];return(-1^n)>>>0},
             action: {
@@ -244,6 +252,7 @@
                 select(){
                     return new Promise((res,rej)=>{
                         let actionList = qs('.action-list');
+                        let vertActionList = qs('.vertical-action-bar');
                         let bx;
 
                         function listener(e){
@@ -251,6 +260,7 @@
 
                             bx.close(true);
                             actionList.removeEventListener('contextmenu', listener);
+                            if(vertActionList) vertActionList.addEventListener('contextmenu', listener);
 
                             res({
                                 text: el.title.toLowerCase(),
@@ -262,6 +272,7 @@
                         box.onclose = ()=>rej();
 
                         actionList.addEventListener('contextmenu', listener);
+                        if(vertActionList) vertActionList.addEventListener('contextmenu', listener);
                     });
                 }
             },
@@ -583,10 +594,13 @@
                                     w.eval(bind.action.value);
                                     break;
                                 case 'chat':
-                                    pt.chat.sendMessage(bind.action.value);
+                                    pt.chat.ftaSend(bind.action.value);
                                     break;
                                 case 'action':
                                     pt.action.invoke(bind.action.value);
+                                    break;
+                                case 'key':
+                                    pt.sendKey(bind.action.value);
                                     break;
                             }
                         }
@@ -1753,8 +1767,8 @@
 
                 ta.onfocus = ()=>fta.focus();
 
-                function ftaSend(){
-                    let val = fta.value.replaceAll('\r', '').replaceAll('\n', '');
+                function ftaSend(val){
+                    val = val.replaceAll('\r', '').replaceAll('\n', '');
                     let arr = val.split(' ');
                     arr[0] = arr[0].replace('/', '');
 
@@ -1771,9 +1785,11 @@
                     fta.value = '';
                 }
 
+                pt.chat.ftaSend = ftaSend;
+
                 fta.addEventListener('input', ()=>{
                     if(fta.value.includes('\n')){
-                        ftaSend();
+                        ftaSend(fta.value);
                     }
                     if(!twOptions.disable_typing_animation.value){
                         settingTA = true;
@@ -1786,7 +1802,7 @@
                 let sendBtn = fta.parentNode.parentNode.querySelectorAll('button')[1];
                 sendBtn.onclick = e=>{
                     e.stopImmediatePropagation();
-                    ftaSend();
+                    ftaSend(fta.value);
                     return false;
                 }
 
