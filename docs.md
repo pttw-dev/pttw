@@ -75,18 +75,22 @@
 `_KeyBindAction`  
 Представляет действие привязки клавиш.
 - `type: string`  
-  Тип действия. Одно из значений: `action`, `chat`, `js`.
+  Тип действия. Одно из значений: `action`, `chat`, `key`, `js`.
 - `value: string | _Action`  
   Значение, которое будет передано одной из следующих функций:
   | `type` | Функция |
   | ------ | ------- |
   | `action` | `pt.action.invoke` |
   | `chat` | `pt.chat.sendMessage` |
+  | `key` | `pt.sendKey` |
   | `js` | `eval` |
 
 ## Функции
 
 ### Управление
+
+`async pt.sendKey(keyCode: number | string, delay: number): void`  
+Симулировать нажатие указанной клавиши. Параметр `keyCode` может быть кодом клавиши или её строковым представлением.
 
 `async pt.move(direction: string, time: number): void`  
 Двигаться в указанном направлении (`left`, `right`, `up`, `down`) указанное количество миллисекунд.
@@ -166,7 +170,7 @@
 `pt.player.get(): Player`  
 Получить объект Player из открытого профиля игрока.
 
-`async pt.player.getByMessage(msg: Message): Player)`  
+`async pt.player.getByMessage(msg: Message): Player`  
 Получить объект Player автора указанного сообщения.
 
 ### Зум
