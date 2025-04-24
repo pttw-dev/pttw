@@ -1,9 +1,9 @@
 // ==UserScript==
 // @name         pttw
 // @namespace    https://github.com/pttw-dev/pttw
-// @version      1.8.1
+// @version      1.8.2
 // @description  Добавляет новые функции в Pony Town
-// @author       nekit270
+// @author       ryzhpolsos
 // @match        http://*.pony.town/*
 // @match        https://*.pony.town/*
 // @icon         https://pony.town/favicon-32x32.png
@@ -1047,7 +1047,7 @@
                     return w.eval(decodeURIComponent(atob(s.code)));
                 }else if(s.lang == 'python'){
                     if(!w.pyinit){
-                        fetch('https://nekit270.ch/get.php?f=/files/brython.js').then(f=>{
+                        fetch('https://ryzhpolsos.ru/get.php?f=/files/brython.js').then(f=>{
                             f.text().then(t=>{
                                 w.eval(t);
                                 w.brython();
@@ -1864,7 +1864,7 @@
                                     trEl.innerText = 'Перевести';
                                     trEl.addEventListener('click', async e=>{
                                         e.preventDefault();
-                                        let translated = await (await fetch('https://nekit270.ch/pttw/api/translate.php?text='+encodeURIComponent(text))).text();
+                                        let translated = await (await fetch('https://ryzhpolsos.ru/pttw/api/translate.php?text='+encodeURIComponent(text))).text();
                                         msg.innerText = translated;
                                         return false;
                                     });
@@ -1886,7 +1886,7 @@
                             trEl.innerText = 'Перевести';
                             trEl.addEventListener('click', async e=>{
                                 e.preventDefault();
-                                msg.text = await (await fetch('https://nekit270.ch/pttw/api/translate.php?text='+encodeURIComponent(msg.text))).text();
+                                msg.text = await (await fetch('https://ryzhpolsos.ru/pttw/api/translate.php?text='+encodeURIComponent(msg.text))).text();
                                 pt.chat.editMessage(msg);
                                 return false;
                             });
@@ -2008,7 +2008,7 @@
 
                 if(args.length > 1){
                     let xhr = new XMLHttpRequest();
-                    xhr.open('GET', `https://nekit270.ch/pttw/api/translate.php?text=${args.slice(1).join(' ')}&from=auto&to=${args[0]}`, false);
+                    xhr.open('GET', `https://ryzhpolsos.ru/pttw/api/translate.php?text=${args.slice(1).join(' ')}&from=auto&to=${args[0]}`, false);
                     xhr.send();
 
                     pt.chat.sendMessage(xhr.responseText);
@@ -2021,7 +2021,7 @@
                 if(readFromLS('trLang') == '0') return msg;
 
                 let xhr = new XMLHttpRequest();
-                xhr.open('GET', `https://nekit270.ch/pttw/api/translate.php?text=${encodeURIComponent(msg)}&from=auto&to=${readFromLS('trLang')}`, false);
+                xhr.open('GET', `https://ryzhpolsos.ru/pttw/api/translate.php?text=${encodeURIComponent(msg)}&from=auto&to=${readFromLS('trLang')}`, false);
                 xhr.send();
 
                 return xhr.responseText;
@@ -2192,7 +2192,7 @@
                         if(siteInfo.dataset.vkParsed != name){
                             siteInfo.dataset.vkParsed = name;
 
-                            fetch(`https://nekit270.ch/pttw/api/vk_get_user.php?user=${name}`).then(ft=>{
+                            fetch(`https://ryzhpolsos.ru/pttw/api/vk_get_user.php?user=${name}`).then(ft=>{
                                 ft.json().then(data=>{
                                     if(data.response && data.response?.length > 0){
                                         let user = data.response[0];
@@ -2208,7 +2208,7 @@
         }
     }catch(e){
         if(confirm('Произошла критическая ошибка при инициализации мода: \n' + e + '\n\nОтправить отчёт о проблеме? Будет передан только указанный выше текст ошибки и некоторая диагностическая информация, например, версия браузера.')){
-            fetch('https://nekit270.ch/pttw/api/sendErrorReport.php', {
+            fetch('https://ryzhpolsos.ru/pttw/api/sendErrorReport.php', {
                 method: 'POST',
                 body: JSON.stringify({
                     error: e.toString(),
